@@ -1,4 +1,5 @@
 import datetime
+from django.utils import timezone
 
 from django.test import TestCase
 
@@ -49,13 +50,15 @@ class MovieSessionApiTests(TestCase):
             self.assertEqual(movie_sessions.data[0][field], movie_session[field])
 
     def test_post_movie_session(self):
+        show_time = timezone.make_aware(datetime.datetime.now())
         movies = self.client.post(
             "/api/cinema/movie_sessions/",
             {
                 "movie": 1,
                 "cinema_hall": 1,
-                "show_time": datetime.datetime.now(),
+                "show_time": show_time.isoformat(),
             },
+            format="json"
         )
         movie_sessions = MovieSession.objects.all()
         self.assertEqual(movies.status_code, status.HTTP_201_CREATED)
